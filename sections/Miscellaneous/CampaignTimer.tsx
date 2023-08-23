@@ -105,7 +105,7 @@ function CampaignTimer({
 
   return (
     <>
-      <div class="bg-accent text-accent-content">
+      <div class="bg-primary text-accent-content">
         <div class="container mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-center lg:gap-16 py-4 px-6 gap-4 ">
           {layout?.textPosition !== "After counter" &&
             (
