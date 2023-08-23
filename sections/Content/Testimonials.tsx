@@ -83,7 +83,7 @@ const DEFAULT_PROPS: Props = {
 };
 
 const Testimonal = ({ image, text, user }: Testimonial) => (
-  <div class="flex flex-col items-center gap-9 text-center">
+  <div class="flex flex-col items-center gap-9 text-center bg-white rounded-lg p-8">
     {image?.src && (
       <Image
         src={image.src}
@@ -92,7 +92,7 @@ const Testimonal = ({ image, text, user }: Testimonial) => (
         height={100}
       />
     )}
-    <h3 class="text-xl lg:text-2xl">
+    <h3 class="text-sm lg:text-2sm">
       {text}
     </h3>
     <div class="flex flex-col items-center gap-4">
@@ -108,13 +108,13 @@ const Testimonal = ({ image, text, user }: Testimonial) => (
       <div class="flex flex-col">
         {user?.name &&
           (
-            <p class="text-lg">
+            <p class="text-sm font-bold uppercase">
               {user?.name}
             </p>
           )}
         {(user?.position || user?.company) &&
           (
-            <p class="text-lg">
+            <p class="text-xs">
               {user?.position}, {user?.company}
             </p>
           )}
