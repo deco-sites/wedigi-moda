@@ -89,7 +89,7 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
     <a
       href={url && relative(url)}
       aria-label="view product"
-      class="btn btn-block"
+      class="btn btn-block btn-accent"
     >
       {l?.basics?.ctaText || "Ver produto"}
     </a>
@@ -98,7 +98,7 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
   return (
     <div
       id={id}
-      class={`card card-compact group w-full ${
+      class={`card card-compact group w-full bg-white ${
         align === "center" ? "text-center" : "text-start"
       } ${l?.onMouseOver?.showCardShadow ? "lg:hover:card-bordered" : ""}
         ${
@@ -201,7 +201,7 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
         </figcaption>
       </figure>
       {/* Prices & Name */}
-      <div class="flex-auto flex flex-col p-2 gap-3 lg:gap-4">
+      <div class="flex-auto flex flex-col p-8 gap-3 lg:gap-4">
         {/* SKU Selector */}
         {(!l?.elementsPositions?.skuSelector ||
           l?.elementsPositions?.skuSelector === "Top") && (
@@ -225,14 +225,14 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
               {l?.hide?.productName
                 ? ""
                 : (
-                  <h2 class="truncate text-base lg:text-lg text-base-content">
+                  <h2 class="truncate text-base lg:text-sm uppercase text-base-content">
                     {name}
                   </h2>
                 )}
               {l?.hide?.productDescription
                 ? ""
                 : (
-                  <p class="truncate text-sm lg:text-sm text-neutral">
+                  <p class="truncate text-sm lg:text-xs text-neutral">
                     {product.description}
                   </p>
                 )}
@@ -249,22 +249,20 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
             >
               <div
                 class={`line-through text-base-300 text-xs ${
-                  l?.basics?.oldPriceSize === "Normal" ? "lg:text-xl" : ""
+                  l?.basics?.oldPriceSize === "Normal" ? "lg:text-sm" : ""
                 }`}
               >
                 {formatPrice(listPrice, offers!.priceCurrency!)}
               </div>
-              <div class="text-accent text-base lg:text-xl">
+              <div class="text-accent text-base lg:text-sm">
                 {formatPrice(price, offers!.priceCurrency!)}
               </div>
             </div>
-            {l?.hide?.installments
-              ? ""
-              : (
-                <div class="text-base-300 text-sm lg:text-base">
-                  ou {installments}
-                </div>
-              )}
+            {l?.hide?.installments ? "" : (
+              <div class="text-base-300 text-xs">
+                ou {installments}
+              </div>
+            )}
           </div>
         )}
 

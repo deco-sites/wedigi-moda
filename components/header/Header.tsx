@@ -59,7 +59,10 @@ function Header({
   const searchbar = { ..._searchbar, products, suggestions };
   return (
     <>
-      <header style={{ height: headerHeight }}>
+      <header
+        class="sticky top-0 bg-white backdrop-blur-sm"
+        style={{ height: headerHeight, zIndex: 99 }}
+      >
         <Drawers
           menu={{ items: navItems }}
           searchbar={searchbar}
