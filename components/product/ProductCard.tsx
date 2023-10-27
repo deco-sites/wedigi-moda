@@ -52,7 +52,7 @@ const relative = (url: string) => {
 };
 
 const WIDTH = 200;
-const HEIGHT = 279;
+const HEIGHT = 200;
 
 function ProductCard({ product, preload, itemListName, layout }: Props) {
   const {
@@ -228,13 +228,6 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
                   <h2 class="truncate text-base lg:text-sm uppercase text-base-content">
                     {name}
                   </h2>
-                )}
-              {l?.hide?.productDescription
-                ? ""
-                : (
-                  <p class="truncate text-sm lg:text-xs text-neutral">
-                    {product.description}
-                  </p>
                 )}
             </div>
           )}

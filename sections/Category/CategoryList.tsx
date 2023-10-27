@@ -84,7 +84,7 @@ function CategoryList(props: Props) {
       id={id}
       class="flex flex-col gap-8 lg:gap-10 text-base-content"
     >
-      <Slider class="carousel carousel-start row-start-2 row-end-5">
+      <Slider class="carousel">
         {list.map((
           { tag, label, description, href, image, buttonText },
           index,

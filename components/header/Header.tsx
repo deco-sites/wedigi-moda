@@ -67,7 +67,7 @@ function Header({
           menu={{ items: navItems }}
           searchbar={searchbar}
         >
-          <div class="bg-base-100 fixed w-full z-50">
+          <div class="fixed w-full z-50">
             <Alert alerts={alerts} />
             <Navbar items={navItems} searchbar={searchbar} logo={logo} />
           </div>
