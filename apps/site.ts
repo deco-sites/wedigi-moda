@@ -29,7 +29,7 @@ export type Platform =
   | "nuvemshop"
   | "custom";
 
-export let _platform: Platform = "custom";
+export let _platform: Platform = "shopify";
 
 export type App = ReturnType<typeof Site>;
 export type AppContext = AC<App>;
