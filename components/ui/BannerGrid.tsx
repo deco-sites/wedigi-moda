@@ -1,12 +1,13 @@
-import { Picture, Source } from "deco-sites/std/components/Picture.tsx";
-import type { Image as LiveImage } from "deco-sites/std/components/types.ts";
+import { Picture, Source } from "apps/website/components/Picture.tsx";
+import type { ImageWidget } from "apps/admin/widgets.ts";
+import Image from "apps/website/components/Image.tsx";
 
 /**
  * @titleBy alt
  */
 export interface Banner {
-  srcMobile: LiveImage;
-  srcDesktop?: LiveImage;
+  srcMobile: ImageWidget;
+  srcDesktop?: ImageWidget;
   /**
    * @description Image alt text
    */
@@ -85,12 +86,44 @@ const RADIUS_DESKTOP = {
   "full": "sm:rounded-full",
 };
 
-export default function BannnerGrid({
-  title,
-  itemsPerLine,
-  borderRadius,
-  banners = [],
-}: Props) {
+const DEFAULT_PROPS: Props = {
+  title: "Summer bags",
+  banners: [
+    {
+      alt: "a",
+      href: "a",
+      srcMobile:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/239/82727553-f670-4e7c-b9c2-9452aed1955f",
+      srcDesktop:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/239/7b3a9d75-57a5-43cf-a3c5-f689a997f24e",
+    },
+    {
+      alt: "a",
+      href: "a",
+      srcMobile:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/239/c5c6bdf6-5555-488c-8b14-719e4158dea6",
+      srcDesktop:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/239/3e2b7824-d75c-4704-8d32-621bfc9b20cf",
+    },
+  ],
+  borderRadius: {
+    mobile: "3xl",
+    desktop: "3xl",
+  },
+  itemsPerLine: {
+    mobile: 2,
+    desktop: 2,
+  },
+};
+
+export default function BannnerGrid(props: Props) {
+  const {
+    title,
+    itemsPerLine,
+    borderRadius,
+    banners = [],
+  } = { ...DEFAULT_PROPS, ...props };
+
   return (
     <section class="container w-full px-4 md:px-0 mx-auto">
       {title &&

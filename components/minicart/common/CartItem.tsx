@@ -1,11 +1,11 @@
-import Button from "$store/components/ui/Button.tsx";
-import Icon from "$store/components/ui/Icon.tsx";
-import QuantitySelector from "$store/components/ui/QuantitySelector.tsx";
-import { sendEvent } from "$store/sdk/analytics.tsx";
-import { formatPrice } from "$store/sdk/format.ts";
-import { AnalyticsItem } from "deco-sites/std/commerce/types.ts";
-import Image from "deco-sites/std/components/Image.tsx";
+import { AnalyticsItem } from "apps/commerce/types.ts";
+import Image from "apps/website/components/Image.tsx";
 import { useCallback, useState } from "preact/hooks";
+import Button from "../../../components/ui/Button.tsx";
+import Icon from "../../../components/ui/Icon.tsx";
+import QuantitySelector from "../../../components/ui/QuantitySelector.tsx";
+import { sendEvent } from "../../../sdk/analytics.tsx";
+import { formatPrice } from "../../../sdk/format.ts";
 
 export interface Item {
   image: {
@@ -66,6 +66,7 @@ function CartItem(
     >
       <Image
         {...image}
+        src={image.src.replace("55-55", "255-255")}
         style={{ aspectRatio: "108 / 150" }}
         width={108}
         height={150}
@@ -94,7 +95,7 @@ function CartItem(
           </Button>
         </div>
         <div class="flex items-center gap-2">
-          <span class="line-through text-base-300 text-sm">
+          <span class="line-through text-sm">
             {formatPrice(list, currency, locale)}
           </span>
           <span class="text-sm text-secondary">
@@ -112,11 +113,11 @@ function CartItem(
             await onUpdateQuantity(quantity, index);
 
             if (analyticsItem) {
-              analyticsItem.quantity = diff;
-
               sendEvent({
                 name: diff < 0 ? "remove_from_cart" : "add_to_cart",
-                params: { items: [analyticsItem] },
+                params: {
+                  items: [{ ...analyticsItem, quantity: Math.abs(diff) }],
+                },
               });
             }
           })}

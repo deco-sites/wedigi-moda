@@ -1,10 +1,7 @@
+import { invoke } from "../../runtime.ts";
+import { clx } from "../../sdk/clx.ts";
 import { useSignal } from "@preact/signals";
-import { Runtime } from "$store/runtime.ts";
 import type { JSX } from "preact";
-
-const subscribe = Runtime.create(
-  "deco-sites/std/actions/vtex/newsletter/subscribe.ts",
-);
 
 export interface Form {
   placeholder?: string;
@@ -40,7 +37,7 @@ function Newsletter(
       const email =
         (e.currentTarget.elements.namedItem("email") as RadioNodeList)?.value;
 
-      await subscribe({ email });
+      await invoke.vtex.actions.newsletter.subscribe({ email });
     } finally {
       loading.value = false;
     }
@@ -48,17 +45,16 @@ function Newsletter(
 
   return (
     <div
-      class={`flex ${
-        tiled
-          ? "flex-col gap-4 lg:flex-row lg:w-full lg:justify-between"
-          : "flex-col gap-4"
-      }`}
+      class={clx(
+        "flex flex-col gap-4",
+        tiled && "lg:flex-row lg:w-full lg:justify-between",
+      )}
     >
       <div class="flex flex-col gap-4">
         {content?.title && (
-          <h3 class={tiled ? "text-2xl lg:text-3xl" : "text-lg"}>
+          <h4 class={tiled ? "text-2xl lg:text-3xl" : "text-lg"}>
             {content?.title}
-          </h3>
+          </h4>
         )}
         {content?.description && <div>{content?.description}</div>}
       </div>

@@ -1,5 +1,5 @@
-import Icon from "$store/components/ui/Icon.tsx";
-import { formatPrice } from "$store/sdk/format.ts";
+import Icon from "../../../components/ui/Icon.tsx";
+import { formatPrice } from "../../../sdk/format.ts";
 
 interface Props {
   total: number;
@@ -19,7 +19,7 @@ function FreeShippingProgressBar({ target, total, currency, locale }: Props) {
         {remaining > 0
           ? (
             <span>
-              Faltam ${formatPrice(remaining, currency, locale)}{" "}
+              Faltam {formatPrice(remaining, currency, locale)}{" "}
               para ganhar frete grátis!
             </span>
           )

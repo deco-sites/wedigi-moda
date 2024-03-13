@@ -1,4 +1,4 @@
-import Icon, { AvailableIcons } from "$store/components/ui/Icon.tsx";
+import Icon, { AvailableIcons } from "../../components/ui/Icon.tsx";
 
 export type Item = {
   label: string;
@@ -47,22 +47,31 @@ export default function FooterItems(
           <ul class="flex flex-col md:hidden gap-4">
             {sections.map((section) => (
               <li>
-                <details>
-                  <summary>
-                    <span class="pl-1 py-2">{section.label}</span>
-                  </summary>
-                  <ul
-                    class={`flex flex-col gap-1 pl-5 pt-2`}
+                <div class="collapse collapse-arrow ">
+                  <input id={section.label} type="checkbox" class="min-h-[0]" />
+                  <label
+                    htmlFor={section.label}
+                    class="collapse-title min-h-[0] !p-0 flex gap-2"
                   >
-                    {section.items?.map((item) => (
-                      <li>
-                        <a href={item.href} class="block py-1 link link-hover">
-                          {item.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
+                    <span>{section.label}</span>
+                  </label>
+                  <div class="collapse-content">
+                    <ul
+                      class={`flex flex-col gap-1 pl-5 pt-2`}
+                    >
+                      {section.items?.map((item) => (
+                        <li>
+                          <a
+                            href={item.href}
+                            class="block py-1 link link-hover"
+                          >
+                            {item.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

@@ -1,10 +1,18 @@
-interface Props {
+import { clx } from "../../sdk/clx.ts";
+
+export interface Props {
   title?: string;
-  fontSize?: "Normal" | "Large";
+  fontSize?: "Small" | "Normal" | "Large";
   description?: string;
-  alignment: "center" | "left";
+  alignment?: "center" | "left";
   colorReverse?: boolean;
 }
+
+const fontSizeClasses = {
+  "Small": "lg:text-2xl",
+  "Normal": "lg:text-3xl",
+  "Large": "lg:text-4xl",
+};
 
 function Header(props: Props) {
   return (
@@ -19,14 +27,13 @@ function Header(props: Props) {
             {props.title &&
               (
                 <h1
-                  class={`text-2xl leading-8 lg:leading-10
-                  ${
+                  class={clx(
+                    "text-2xl font-light leading-8 lg:leading-10",
                     props.colorReverse
                       ? "text-primary-content"
-                      : "text-base-content"
-                  }
-                  ${props.fontSize === "Normal" ? "lg:text-3xl" : "lg:text-4xl"}
-                `}
+                      : "text-base-content",
+                    fontSizeClasses[props.fontSize || "Normal"],
+                  )}
                 >
                   {props.title}
                 </h1>
@@ -34,13 +41,13 @@ function Header(props: Props) {
             {props.description &&
               (
                 <h2
-                  class={`
-                  leading-6 lg:leading-8
-                  ${
-                    props.colorReverse ? "text-primary-content" : "text-neutral"
-                  }
-                  ${props.fontSize === "Normal" ? "lg:text-xl" : "lg:text-2xl"}
-                `}
+                  class={clx(
+                    "leading-6 lg:leading-8",
+                    props.colorReverse
+                      ? "text-primary-content"
+                      : "text-base-content",
+                    fontSizeClasses[props.fontSize || "Normal"],
+                  )}
                 >
                   {props.description}
                 </h2>

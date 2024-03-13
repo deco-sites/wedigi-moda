@@ -1,6 +1,6 @@
-# Fashion starter by deco.cx
+# Storefront starter by deco.cx
 
-A fully featured starter to help you customize and deploy an ecommerce website
+A fully featured starter to help you customize and deploy an ecommerce website.
 in minutes.
 
 <div style="display: flex; justify-content: center; width: 100%">
@@ -9,7 +9,6 @@ in minutes.
 </div>
 
 ## Features
-
 This starter brings:
 
 <ul>
@@ -218,8 +217,8 @@ respecting folder structure. This means:
 
 Check performance best practices on [deco.cx's docs](https://www.deco.cx/docs).
 
-# Thanks to all contributors!
+# Thanks to all contributors !
 
 <a href="https://github.com/deco-sites/fashion/graphs/contributors">
-  <img src="https://contributors-img.web.app/image?repo=deco-sites/fashion" />
+  <img src="https://contributors-img.web.app/image?repo=deco-sites/fashion" alt="Storefront Contributors" />
 </a>

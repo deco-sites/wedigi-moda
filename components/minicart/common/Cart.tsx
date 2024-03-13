@@ -1,8 +1,8 @@
-import Button from "$store/components/ui/Button.tsx";
-import { sendEvent } from "$store/sdk/analytics.tsx";
-import { formatPrice } from "$store/sdk/format.ts";
-import { useUI } from "$store/sdk/useUI.ts";
-import { AnalyticsItem } from "deco-sites/std/commerce/types.ts";
+import { AnalyticsItem } from "apps/commerce/types.ts";
+import Button from "../../../components/ui/Button.tsx";
+import { sendEvent } from "../../../sdk/analytics.tsx";
+import { formatPrice } from "../../../sdk/format.ts";
+import { useUI } from "../../../sdk/useUI.ts";
 import CartItem, { Item, Props as ItemProps } from "./CartItem.tsx";
 import Coupon, { Props as CouponProps } from "./Coupon.tsx";
 import FreeShippingProgressBar from "./FreeShippingProgressBar.tsx";
@@ -17,7 +17,8 @@ interface Props {
   currency: string;
   coupon?: string;
   freeShippingTarget: number;
-  onAddCoupon: CouponProps["onAddCoupon"];
+  checkoutHref: string;
+  onAddCoupon?: CouponProps["onAddCoupon"];
   onUpdateQuantity: ItemProps["onUpdateQuantity"];
   itemToAnalyticsItem: ItemProps["itemToAnalyticsItem"];
 }
@@ -32,6 +33,7 @@ function Cart({
   currency,
   discounts,
   freeShippingTarget,
+  checkoutHref,
   itemToAnalyticsItem,
   onUpdateQuantity,
   onAddCoupon,
@@ -103,11 +105,13 @@ function Cart({
                 )}
                 <div class="w-full flex justify-between px-4 text-sm">
                   <span>Subtotal</span>
-                  <span class="px-4">
+                  <span>
                     {formatPrice(subtotal, currency, locale)}
                   </span>
                 </div>
-                <Coupon onAddCoupon={onAddCoupon} coupon={coupon} />
+                {onAddCoupon && (
+                  <Coupon onAddCoupon={onAddCoupon} coupon={coupon} />
+                )}
               </div>
 
               {/* Total */}
@@ -124,7 +128,7 @@ function Cart({
               </div>
 
               <div class="p-4">
-                <a class="inline-block w-full" href="/checkout">
+                <a class="inline-block w-full" href={checkoutHref}>
                   <Button
                     data-deco="buy-button"
                     class="btn-primary btn-block"
@@ -135,7 +139,7 @@ function Cart({
                         params: {
                           coupon,
                           currency,
-                          value: total - discounts,
+                          value: total,
                           items: items
                             .map((_, index) => itemToAnalyticsItem(index))
                             .filter((x): x is AnalyticsItem => Boolean(x)),

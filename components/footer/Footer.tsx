@@ -1,16 +1,16 @@
-import Logo from "$store/components/footer/Logo.tsx";
-import Newsletter from "$store/islands/Newsletter.tsx";
-import FooterItems from "$store/components/footer/FooterItems.tsx";
-import Social from "$store/components/footer/Social.tsx";
-import PaymentMethods from "$store/components/footer/PaymentMethods.tsx";
-import MobileApps from "$store/components/footer/MobileApps.tsx";
-import ExtraLinks from "$store/components/footer/ExtraLinks.tsx";
-import RegionSelector from "$store/components/footer/RegionSelector.tsx";
-import ColorClasses from "$store/components/footer/ColorClasses.tsx";
-import Divider from "$store/components/footer/Divider.tsx";
-import BackToTop from "$store/components/footer/BackToTop.tsx";
-import PoweredByDeco from "deco-sites/std/components/PoweredByDeco.tsx";
-import type { Image as LiveImage } from "deco-sites/std/components/types.ts";
+import BackToTop from "../../components/footer/BackToTop.tsx";
+import Divider from "../../components/footer/Divider.tsx";
+import ExtraLinks from "../../components/footer/ExtraLinks.tsx";
+import FooterItems from "../../components/footer/FooterItems.tsx";
+import Logo from "../../components/footer/Logo.tsx";
+import MobileApps from "../../components/footer/MobileApps.tsx";
+import PaymentMethods from "../../components/footer/PaymentMethods.tsx";
+import RegionSelector from "../../components/footer/RegionSelector.tsx";
+import Social from "../../components/footer/Social.tsx";
+import Newsletter from "../../islands/Newsletter.tsx";
+import { clx } from "../../sdk/clx.ts";
+import type { ImageWidget } from "apps/admin/widgets.ts";
+import PoweredByDeco from "apps/website/components/PoweredByDeco.tsx";
 
 export type Item = {
   label: string;
@@ -84,7 +84,7 @@ export interface Layout {
 
 export interface Props {
   logo?: {
-    image: LiveImage;
+    image: ImageWidget;
     description?: string;
   };
   newsletter?: {
@@ -110,6 +110,14 @@ export interface Props {
   };
   layout?: Layout;
 }
+
+const LAYOUT = {
+  "Primary": "bg-primary text-primary-content",
+  "Secondary": "bg-secondary text-secondary-content",
+  "Accent": "bg-accent text-accent-content",
+  "Base 100": "bg-base-100 text-base-content",
+  "Base 100 inverted": "bg-base-content text-base-100",
+};
 
 function Footer({
   logo,
@@ -214,9 +222,10 @@ function Footer({
 
   return (
     <footer
-      class={`w-full flex flex-col pt-10 pb-2 md:pb-10 gap-10 ${
-        ColorClasses(layout)
-      }`}
+      class={clx(
+        "w-full flex flex-col pt-10 pb-2 md:pb-10 gap-10",
+        LAYOUT[layout?.backgroundColor ?? "Primary"],
+      )}
     >
       <div class="lg:container mx-6 lg:mx-auto">
         {(!layout?.variation || layout?.variation == "Variation 1") && (

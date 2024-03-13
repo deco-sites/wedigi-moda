@@ -1,19 +1,19 @@
-import Icon from "$store/components/ui/Icon.tsx";
-import Image from "deco-sites/std/components/Image.tsx";
-import Header from "$store/components/ui/SectionHeader.tsx";
-import Slider from "$store/components/ui/Slider.tsx";
-import SliderJS from "$store/islands/SliderJS.tsx";
-import { useId } from "$store/sdk/useId.ts";
-import type { Image as ImageType } from "deco-sites/std/components/types.ts";
+import Icon from "../../components/ui/Icon.tsx";
+import Image from "apps/website/components/Image.tsx";
+import Header from "../../components/ui/SectionHeader.tsx";
+import Slider from "../../components/ui/Slider.tsx";
+import SliderJS from "../../islands/SliderJS.tsx";
+import { useId } from "../../sdk/useId.ts";
+import type { ImageWidget } from "apps/admin/widgets.ts";
 
 export interface Testimonial {
   text?: string;
   image?: {
-    src?: ImageType;
+    src?: ImageWidget;
     alt?: string;
   };
   user?: {
-    avatar?: ImageType;
+    avatar?: ImageWidget;
     name?: string;
     position?: string;
     company?: string;
@@ -83,7 +83,7 @@ const DEFAULT_PROPS: Props = {
 };
 
 const Testimonal = ({ image, text, user }: Testimonial) => (
-  <div class="flex flex-col items-center gap-9 text-center bg-white rounded-lg p-8">
+  <div class="flex flex-col items-center gap-9 text-center">
     {image?.src && (
       <Image
         src={image.src}
@@ -92,7 +92,7 @@ const Testimonal = ({ image, text, user }: Testimonial) => (
         height={100}
       />
     )}
-    <h3 class="text-sm lg:text-2sm">
+    <h3 class="text-xl lg:text-2xl">
       {text}
     </h3>
     <div class="flex flex-col items-center gap-4">
@@ -108,13 +108,13 @@ const Testimonal = ({ image, text, user }: Testimonial) => (
       <div class="flex flex-col">
         {user?.name &&
           (
-            <p class="text-sm font-bold uppercase">
+            <p class="text-lg">
               {user?.name}
             </p>
           )}
         {(user?.position || user?.company) &&
           (
-            <p class="text-xs">
+            <p class="text-lg">
               {user?.position}, {user?.company}
             </p>
           )}

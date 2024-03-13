@@ -1,14 +1,11 @@
-import {
-  itemToAnalyticsItem,
-  useCart,
-} from "deco-sites/std/packs/vnda/hooks/useCart.ts";
+import { itemToAnalyticsItem, useCart } from "apps/vnda/hooks/useCart.ts";
 import BaseCart from "../common/Cart.tsx";
 
 const normalizeUrl = (url: string) =>
   url.startsWith("//") ? `https:${url}` : url;
 
 function Cart() {
-  const { cart, loading, updateItem, updateCoupon } = useCart();
+  const { cart, loading, updateItem, update } = useCart();
   const items = cart.value?.orderForm?.items ?? [];
 
   const total = cart.value?.orderForm?.total ?? 0;
@@ -17,11 +14,15 @@ function Cart() {
   const locale = "pt-BR";
   const currency = "BRL";
   const coupon = cart.value?.orderForm?.coupon_code ?? undefined;
+  const token = cart.value?.orderForm?.token;
 
   return (
     <BaseCart
       items={items.map((item) => ({
-        image: { src: normalizeUrl(item.image_url), alt: item.product_name },
+        image: {
+          src: normalizeUrl(item.image_url ?? ""),
+          alt: item.product_name,
+        },
         quantity: item.quantity,
         name: item.variant_name,
         price: {
@@ -37,9 +38,15 @@ function Cart() {
       loading={loading.value}
       freeShippingTarget={1000}
       coupon={coupon}
-      onAddCoupon={(code) => updateCoupon({ code })}
-      onUpdateQuantity={(quantity: number, index: number) =>
-        updateItem({ quantity, itemId: items[index].id })}
+      checkoutHref={`/checkout/${token}`}
+      onAddCoupon={(code) => update({ coupon_code: code })}
+      onUpdateQuantity={async (quantity: number, index: number) => {
+        const item = items[index];
+
+        if (!item || typeof item.id === "undefined") return;
+
+        return await updateItem({ quantity, itemId: item.id });
+      }}
       itemToAnalyticsItem={(index) => {
         const item = items[index];
 

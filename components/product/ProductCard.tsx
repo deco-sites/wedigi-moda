@@ -1,12 +1,15 @@
-import { SendEventOnClick } from "$store/components/Analytics.tsx";
-import Avatar from "$store/components/ui/Avatar.tsx";
-import WishlistIcon from "$store/islands/WishlistButton.tsx";
-import { formatPrice } from "$store/sdk/format.ts";
-import { useOffer } from "$store/sdk/useOffer.ts";
-import { useVariantPossibilities } from "$store/sdk/useVariantPossiblities.ts";
-import type { Product } from "deco-sites/std/commerce/types.ts";
-import { mapProductToAnalyticsItem } from "deco-sites/std/commerce/utils/productToAnalyticsItem.ts";
-import Image from "deco-sites/std/components/Image.tsx";
+import type { Platform } from "../../apps/site.ts";
+import { SendEventOnClick } from "../../components/Analytics.tsx";
+import Avatar from "../../components/ui/Avatar.tsx";
+import WishlistButtonVtex from "../../islands/WishlistButton/vtex.tsx";
+import WishlistButtonWake from "../../islands/WishlistButton/vtex.tsx";
+import { formatPrice } from "../../sdk/format.ts";
+import { useOffer } from "../../sdk/useOffer.ts";
+import { useVariantPossibilities } from "../../sdk/useVariantPossiblities.ts";
+import type { Product } from "apps/commerce/types.ts";
+import { mapProductToAnalyticsItem } from "apps/commerce/utils/productToAnalyticsItem.ts";
+import Image from "apps/website/components/Image.tsx";
+import { relative } from "../../sdk/url.ts";
 
 export interface Layout {
   basics?: {
@@ -22,9 +25,11 @@ export interface Layout {
     productName?: boolean;
     productDescription?: boolean;
     allPrices?: boolean;
+    discount?: boolean;
     installments?: boolean;
     skuSelector?: boolean;
     cta?: boolean;
+    favoriteIcon?: boolean;
   };
   onMouseOver?: {
     image?: "Change image" | "Zoom image";
@@ -43,31 +48,33 @@ interface Props {
 
   /** @description used for analytics event */
   itemListName?: string;
+
+  /** @description index of the product card in the list */
+  index?: number;
+
   layout?: Layout;
+  platform?: Platform;
 }
 
-const relative = (url: string) => {
-  const link = new URL(url);
-  return `${link.pathname}${link.search}`;
-};
-
 const WIDTH = 200;
-const HEIGHT = 200;
+const HEIGHT = 279;
 
-function ProductCard({ product, preload, itemListName, layout }: Props) {
-  const {
-    url,
-    productID,
-    name,
-    image: images,
-    offers,
-    isVariantOf,
-  } = product;
+function ProductCard({
+  product,
+  preload,
+  itemListName,
+  layout,
+  platform,
+  index,
+}: Props) {
+  const { url, productID, name, image: images, offers, isVariantOf } = product;
   const id = `product-card-${productID}`;
+  const hasVariant = isVariantOf?.hasVariant ?? [];
   const productGroupID = isVariantOf?.productGroupID;
+  const description = product.description || isVariantOf?.description;
   const [front, back] = images ?? [];
   const { listPrice, price, installments } = useOffer(offers);
-  const possibilities = useVariantPossibilities(product);
+  const possibilities = useVariantPossibilities(hasVariant, product);
   const variants = Object.entries(Object.values(possibilities)[0] ?? {});
 
   const l = layout;
@@ -75,21 +82,29 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
     !l?.basics?.contentAlignment || l?.basics?.contentAlignment == "Left"
       ? "left"
       : "center";
-  const skuSelector = variants.map(([value, [link]]) => (
-    <li>
-      <a href={link}>
-        <Avatar
-          variant={link === url ? "active" : "default"}
-          content={value}
-        />
-      </a>
-    </li>
-  ));
+  const relativeUrl = relative(url);
+  const skuSelector = variants.map(([value, link]) => {
+    const relativeLink = relative(link);
+    return (
+      <li>
+        <a href={relativeLink}>
+          <Avatar
+            variant={relativeLink === relativeUrl
+              ? "active"
+              : relativeLink
+              ? "default"
+              : "disabled"}
+            content={value}
+          />
+        </a>
+      </li>
+    );
+  });
   const cta = (
     <a
       href={url && relative(url)}
       aria-label="view product"
-      class="btn btn-block btn-accent"
+      class="btn btn-block"
     >
       {l?.basics?.ctaText || "Ver produto"}
     </a>
@@ -98,7 +113,7 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
   return (
     <div
       id={id}
-      class={`card card-compact group w-full bg-white ${
+      class={`card card-compact group w-full ${
         align === "center" ? "text-center" : "text-start"
       } ${l?.onMouseOver?.showCardShadow ? "lg:hover:card-bordered" : ""}
         ${
@@ -119,6 +134,7 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
                 product,
                 price,
                 listPrice,
+                index,
               }),
             ],
           },
@@ -129,25 +145,48 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
         style={{ aspectRatio: `${WIDTH} / ${HEIGHT}` }}
       >
         {/* Wishlist button */}
+
         <div
-          class={`absolute top-2 z-10
-          ${
+          class={`absolute top-2 z-10 flex items-center
+            ${
             l?.elementsPositions?.favoriteIcon === "Top left"
               ? "left-2"
               : "right-2"
           }
-          ${
-            l?.onMouseOver?.showFavoriteIcon
-              ? "lg:hidden lg:group-hover:block"
-              : "lg:hidden"
-          }
-        `}
+            
+          `}
         >
-          <WishlistIcon
-            productGroupID={productGroupID}
-            productID={productID}
-          />
+          <div
+            class={`${l?.hide?.favoriteIcon ? "hidden" : "block"} ${
+              l?.onMouseOver?.showFavoriteIcon ? "lg:group-hover:block" : ""
+            }`}
+          >
+            {platform === "vtex" && (
+              <WishlistButtonVtex
+                productGroupID={productGroupID}
+                productID={productID}
+              />
+            )}
+            {platform === "wake" && (
+              <WishlistButtonWake
+                productGroupID={productGroupID}
+                productID={productID}
+              />
+            )}
+          </div>
+          {/* Discount % */}
+          {!l?.hide?.discount && (
+            <div class="text-sm bg-base-100 p-[10px]">
+              <span class="text-base-content font-bold">
+                {listPrice && price
+                  ? `${Math.round(((listPrice - price) / listPrice) * 100)}% `
+                  : ""}
+              </span>
+              OFF
+            </div>
+          )}
         </div>
+
         {/* Product Images */}
         <a
           href={url && relative(url)}
@@ -201,79 +240,113 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
         </figcaption>
       </figure>
       {/* Prices & Name */}
-      <div class="flex-auto flex flex-col p-8 gap-3 lg:gap-4">
+      <div class="flex-auto flex flex-col p-2 gap-3 lg:gap-2">
         {/* SKU Selector */}
         {(!l?.elementsPositions?.skuSelector ||
           l?.elementsPositions?.skuSelector === "Top") && (
           <>
-            {l?.hide?.skuSelector ? "" : (
-              <ul
-                class={`flex items-center gap-2 w-full overflow-auto p-3 ${
-                  align === "center" ? "justify-center" : "justify-start"
-                } ${l?.onMouseOver?.showSkuSelector ? "lg:hidden" : ""}`}
-              >
-                {skuSelector}
-              </ul>
-            )}
+            {l?.hide?.skuSelector
+              ? (
+                ""
+              )
+              : (
+                <ul
+                  class={`flex items-center gap-2 w-full overflow-auto p-3 ${
+                    align === "center" ? "justify-center" : "justify-start"
+                  } ${l?.onMouseOver?.showSkuSelector ? "lg:hidden" : ""}`}
+                >
+                  {skuSelector}
+                </ul>
+              )}
           </>
         )}
 
         {l?.hide?.productName && l?.hide?.productDescription
-          ? ""
+          ? (
+            ""
+          )
           : (
             <div class="flex flex-col gap-0">
               {l?.hide?.productName
-                ? ""
+                ? (
+                  ""
+                )
                 : (
-                  <h2 class="truncate text-base lg:text-sm uppercase text-base-content">
-                    {name}
-                  </h2>
+                  <h2
+                    class="truncate text-base lg:text-lg text-base-content uppercase font-normal"
+                    dangerouslySetInnerHTML={{ __html: name ?? "" }}
+                  />
+                )}
+              {l?.hide?.productDescription
+                ? (
+                  ""
+                )
+                : (
+                  <div
+                    class="truncate text-sm lg:text-sm text-neutral"
+                    dangerouslySetInnerHTML={{ __html: description ?? "" }}
+                  />
                 )}
             </div>
           )}
-        {l?.hide?.allPrices ? "" : (
-          <div class="flex flex-col gap-2">
-            <div
-              class={`flex flex-col gap-0 ${
-                l?.basics?.oldPriceSize === "Normal"
-                  ? "lg:flex-row lg:gap-2"
-                  : ""
-              } ${align === "center" ? "justify-center" : "justify-start"}`}
-            >
+        {l?.hide?.allPrices
+          ? (
+            ""
+          )
+          : (
+            <div class="flex flex-col gap-2">
               <div
-                class={`line-through text-base-300 text-xs ${
-                  l?.basics?.oldPriceSize === "Normal" ? "lg:text-sm" : ""
-                }`}
+                class={`flex flex-col gap-0 ${
+                  l?.basics?.oldPriceSize === "Normal"
+                    ? "lg:flex-row-reverse lg:gap-2"
+                    : ""
+                } ${align === "center" ? "justify-center" : "justify-end"}`}
               >
-                {formatPrice(listPrice, offers!.priceCurrency!)}
-              </div>
-              <div class="text-accent text-base lg:text-sm">
-                {formatPrice(price, offers!.priceCurrency!)}
+                <div
+                  class={`line-through text-base-300 text-xs font-light ${
+                    l?.basics?.oldPriceSize === "Normal" ? "lg:text-sm" : ""
+                  }`}
+                >
+                  {formatPrice(listPrice, offers?.priceCurrency)}
+                </div>
+                <div class="text-base-content lg:text-sm font-light">
+                  {formatPrice(price, offers?.priceCurrency)}
+                </div>
               </div>
             </div>
-            {l?.hide?.installments ? "" : (
-              <div class="text-base-300 text-xs">
-                ou {installments}
-              </div>
-            )}
-          </div>
-        )}
+          )}
 
         {/* SKU Selector */}
         {l?.elementsPositions?.skuSelector === "Bottom" && (
           <>
-            {l?.hide?.skuSelector ? "" : (
-              <ul
-                class={`flex items-center gap-2 w-full ${
-                  align === "center" ? "justify-center" : "justify-start"
-                } ${l?.onMouseOver?.showSkuSelector ? "lg:hidden" : ""}`}
-              >
-                {skuSelector}
-              </ul>
-            )}
+            <ul
+              class={`flex items-center gap-2 w-full ${
+                align === "center" ? "justify-center" : "justify-between"
+              } ${l?.onMouseOver?.showSkuSelector ? "lg:hidden" : ""}`}
+            >
+              {l?.hide?.installments
+                ? (
+                  ""
+                )
+                : (
+                  <li>
+                    <span class="text-base-300 font-light text-sm truncate">
+                      ou {installments}
+                    </span>
+                  </li>
+                )}
+              {l?.hide?.skuSelector
+                ? (
+                  ""
+                )
+                : (
+                  <li>
+                    <ul class="flex items-center gap-2">{skuSelector}</ul>
+                  </li>
+                )}
+            </ul>
           </>
         )}
-
         {!l?.hide?.cta
           ? (
             <div
@@ -284,7 +357,9 @@ function ProductCard({ product, preload, itemListName, layout }: Props) {
               {cta}
             </div>
           )
-          : ""}
+          : (
+            ""
+          )}
       </div>
     </div>
   );

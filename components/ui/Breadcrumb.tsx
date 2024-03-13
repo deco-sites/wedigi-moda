@@ -1,4 +1,4 @@
-import type { BreadcrumbList } from "deco-sites/std/commerce/types.ts";
+import type { BreadcrumbList } from "apps/commerce/types.ts";
 
 interface Props {
   itemListElement: BreadcrumbList["itemListElement"];
@@ -14,7 +14,7 @@ function Breadcrumb({ itemListElement = [] }: Props) {
           .filter(({ name, item }) => name && item)
           .map(({ name, item }) => (
             <li>
-              <a href={item} class="text-xs">{name}</a>
+              <a href={item}>{name}</a>
             </li>
           ))}
       </ul>

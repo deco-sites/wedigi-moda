@@ -5,8 +5,8 @@
     "scope": "/",
     "start_url": "/",
     "id": "/?source=pwa",
-    "name": "Fashion by we.digi",
-    "short_name": "Fashion Theme",
+    "name": "Fashion by Deco",
+    "short_name": "Fashion",
     "orientation": "portrait",
     "icons": [
         {

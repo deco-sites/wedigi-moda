@@ -1,18 +1,32 @@
-import { Picture, Source } from "deco-sites/std/components/Picture.tsx";
-import type { Image as LiveImage } from "deco-sites/std/components/types.ts";
+import { Picture, Source } from "apps/website/components/Picture.tsx";
+import type { ImageWidget } from "apps/admin/widgets.ts";
+import Image from "apps/website/components/Image.tsx";
 
 export interface Props {
   image: {
-    mobile: LiveImage;
-    desktop?: LiveImage;
+    mobile: ImageWidget;
+    desktop?: ImageWidget;
     altText: string;
   };
 
-  pins: Pin[];
+  pins?: Pin[];
 
-  text?: string;
-  title?: string;
+  title?: {
+    content?: string;
+    layout?: {
+      position?: "justify-start" | "justify-center" | "justify-end";
+    };
+  };
+  text?: {
+    content?: string;
+    layout?: {
+      position?: "text-center" | "text-left" | "text-right";
+    };
+  };
   link?: {
+    layout?: {
+      position?: "justify-start" | "justify-center" | "justify-end";
+    };
     text: string;
     href: string;
   };
@@ -32,15 +46,30 @@ export interface Pin {
 }
 
 const DEFAULT_PROPS: Props = {
+  title: {
+    layout: {
+      position: "justify-center",
+    },
+    content: "Collection",
+  },
+  text: {
+    layout: {
+      position: "text-center",
+    },
+    content: "Your text",
+  },
   link: {
+    layout: {
+      position: "justify-center",
+    },
     href: "#",
-    text: "Ver agora",
+    text: "Text link",
   },
   pins: [],
   image: {
     mobile:
-      "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/239/aa071a4a-fd37-4efa-abf1-f736af0409a3",
-    altText: "capybara",
+      "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/239/cac2dc1c-48ac-4274-ad42-4016b0bbe947",
+    altText: "Fashion",
   },
 };
 
@@ -49,7 +78,7 @@ export default function ShoppableBanner(props: Props) {
 
   return (
     <div class="container">
-      <div class="card lg:card-side rounded grid grid-cols-1 lg:grid-cols-[70%_30%]">
+      <div class="card lg:card-side rounded grid grid-cols-1 lg:grid-cols-2">
         <figure class="relative">
           <Picture>
             <Source
@@ -65,7 +94,7 @@ export default function ShoppableBanner(props: Props) {
               height={227}
             />
             <img
-              class="w-full object-cover"
+              class="w-full h-full object-cover"
               sizes="(max-width: 640px) 100vw, 30vw"
               src={image?.mobile}
               alt={image?.altText}
@@ -73,7 +102,7 @@ export default function ShoppableBanner(props: Props) {
               loading="lazy"
             />
           </Picture>
-          {pins.map(({ mobile, desktop, link, label }) => (
+          {pins?.map(({ mobile, desktop, link, label }) => (
             <>
               <a
                 href={link}
@@ -98,11 +127,15 @@ export default function ShoppableBanner(props: Props) {
             </>
           ))}
         </figure>
-        <div class="card-body">
-          <h2 class="card-title">{title}</h2>
-          <p>{text}</p>
-          <div class="card-actions justify-end">
-            <a class="btn btn-primary" href={link?.href}>{link?.text}</a>
+        <div class="flex flex-col justify-center gap-6 py-20 px-8 bg-neutral-content">
+          <h2 class={`card-title flex ${title?.layout?.position}`}>
+            {title?.content}
+          </h2>
+          <p class={`text-base-content ${text?.layout?.position}`}>
+            {text?.content}
+          </p>
+          <div class={`card-actions ${link?.layout?.position}`}>
+            <a class="underline" href={link?.href}>{link?.text}</a>
           </div>
         </div>
       </div>

@@ -1,19 +1,24 @@
-import Icon from "$store/components/ui/Icon.tsx";
-import Button from "$store/components/ui/Button.tsx";
-import Slider from "$store/components/ui/Slider.tsx";
-import SliderJS from "$store/islands/SliderJS.tsx";
-import { Picture, Source } from "deco-sites/std/components/Picture.tsx";
-import { useId } from "$store/sdk/useId.ts";
-import type { Image as LiveImage } from "deco-sites/std/components/types.ts";
+import {
+  SendEventOnClick,
+  SendEventOnView,
+} from "../../components/Analytics.tsx";
+import Button from "../../components/ui/Button.tsx";
+import Icon from "../../components/ui/Icon.tsx";
+import Slider from "../../components/ui/Slider.tsx";
+import SliderJS from "../../islands/SliderJS.tsx";
+import { useId } from "../../sdk/useId.ts";
+import type { ImageWidget } from "apps/admin/widgets.ts";
+import { Picture, Source } from "apps/website/components/Picture.tsx";
+import Image from "apps/website/components/Image.tsx";
 
 /**
  * @titleBy alt
  */
 export interface Banner {
   /** @description desktop otimized image */
-  desktop: LiveImage;
+  desktop: ImageWidget;
   /** @description mobile otimized image */
-  mobile: LiveImage;
+  mobile: ImageWidget;
   /** @description Image's alt text */
   alt: string;
   action?: {
@@ -35,13 +40,70 @@ export interface Props {
    */
   preload?: boolean;
   /**
+   * @title Show arrows
+   * @description show arrows to navigate through the images
+   */
+  arrows?: boolean;
+  /**
+   * @title Show dots
+   * @description show dots to navigate through the images
+   */
+  dots?: boolean;
+  /**
    * @title Autoplay interval
    * @description time (in seconds) to start the carousel autoplay
    */
   interval?: number;
 }
 
-function BannerItem({ image, lcp }: { image: Banner; lcp?: boolean }) {
+const DEFAULT_PROPS = {
+  images: [
+    {
+      alt: "/feminino",
+      action: {
+        title: "New collection",
+        subTitle: "Main title",
+        label: "Explore collection",
+        href: "/",
+      },
+      mobile:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/2291/c007e481-b1c6-4122-9761-5c3e554512c1",
+      desktop:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/2291/d057fc10-5616-4f12-8d4c-201bb47a81f5",
+    },
+    {
+      alt: "/feminino",
+      action: {
+        title: "New collection",
+        subTitle: "Main title",
+        label: "Explore collection",
+        href: "/",
+      },
+      mobile:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/2291/c007e481-b1c6-4122-9761-5c3e554512c1",
+      desktop:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/2291/d057fc10-5616-4f12-8d4c-201bb47a81f5",
+    },
+    {
+      alt: "/feminino",
+      action: {
+        title: "New collection",
+        subTitle: "Main title",
+        label: "Explore collection",
+        href: "/",
+      },
+      mobile:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/2291/c007e481-b1c6-4122-9761-5c3e554512c1",
+      desktop:
+        "https://ozksgdmyrqcxcwhnbepg.supabase.co/storage/v1/object/public/assets/2291/d057fc10-5616-4f12-8d4c-201bb47a81f5",
+    },
+  ],
+  preload: true,
+};
+
+function BannerItem(
+  { image, lcp, id }: { image: Banner; lcp?: boolean; id: string },
+) {
   const {
     alt,
     mobile,
@@ -51,24 +113,41 @@ function BannerItem({ image, lcp }: { image: Banner; lcp?: boolean }) {
 
   return (
     <a
+      id={id}
       href={action?.href ?? "#"}
       aria-label={action?.label}
-      class="relative h-[460px] overflow-y-hidden w-full"
+      class="relative overflow-y-hidden w-full"
     >
+      {action && (
+        <div class="absolute top-0 md:bottom-0 bottom-1/2 left-0 right-0 sm:right-auto max-w-[407px] flex flex-col justify-end gap-4 px-8 py-12">
+          <span class="text-2xl font-light text-base-100">
+            {action.title}
+          </span>
+          <span class="font-normal text-4xl text-base-100">
+            {action.subTitle}
+          </span>
+          <Button
+            class="bg-base-100 text-sm font-light py-4 px-6 w-fit"
+            aria-label={action.label}
+          >
+            {action.label}
+          </Button>
+        </div>
+      )}
       <Picture preload={lcp}>
         <Source
           media="(max-width: 767px)"
           fetchPriority={lcp ? "high" : "auto"}
           src={mobile}
-          width={360}
-          height={600}
+          width={430}
+          height={590}
         />
         <Source
           media="(min-width: 768px)"
           fetchPriority={lcp ? "high" : "auto"}
           src={desktop}
-          width={1920}
-          height={460}
+          width={1440}
+          height={600}
         />
         <img
           class="object-cover w-full h-full"
@@ -77,17 +156,6 @@ function BannerItem({ image, lcp }: { image: Banner; lcp?: boolean }) {
           alt={alt}
         />
       </Picture>
-      {action && (
-        <div class="absolute h-min top-0 bottom-0 m-auto left-0 right-0 sm:right-auto sm:left-[12%] max-h-min max-w-[235px] flex flex-col gap-4 p-4 rounded glass">
-          <span class="text-6xl font-medium text-base-100">
-            {action.title}
-          </span>
-          <span class="font-medium text-xl text-base-100">
-            {action.subTitle}
-          </span>
-          <Button class="glass">{action.label}</Button>
-        </div>
-      )}
     </a>
   );
 }
@@ -106,7 +174,7 @@ function Dots({ images, interval = 0 }: Props) {
           `,
         }}
       />
-      <ul class="carousel justify-center col-span-full gap-4 z-10 row-start-4">
+      <ul class="carousel justify-center col-span-full gap-6 z-10 row-start-4">
         {images?.map((_, index) => (
           <li class="carousel-item">
             <Slider.Dot index={index}>
@@ -151,25 +219,41 @@ function Buttons() {
   );
 }
 
-function BannerCarousel({ images, preload, interval }: Props) {
+function BannerCarousel(props: Props) {
   const id = useId();
+  const { images, preload, interval } = { ...DEFAULT_PROPS, ...props };
 
   return (
     <div
       id={id}
-      class="grid grid-cols-[48px_1fr_48px] sm:grid-cols-[120px_1fr_120px] grid-rows-[1fr_48px_1fr_64px]"
+      class="grid grid-cols-[48px_1fr_48px] sm:grid-cols-[120px_1fr_120px] grid-rows-[1fr_48px_1fr_64px] sm:min-h-min min-h-[660px]"
     >
       <Slider class="carousel carousel-center w-full col-span-full row-span-full gap-6">
-        {images?.map((image, index) => (
-          <Slider.Item index={index} class="carousel-item w-full">
-            <BannerItem image={image} lcp={index === 0 && preload} />
-          </Slider.Item>
-        ))}
+        {images?.map((image, index) => {
+          const params = { promotion_name: image.alt };
+          return (
+            <Slider.Item index={index} class="carousel-item w-full">
+              <BannerItem
+                image={image}
+                lcp={index === 0 && preload}
+                id={`${id}::${index}`}
+              />
+              <SendEventOnClick
+                id={`${id}::${index}`}
+                event={{ name: "select_promotion", params }}
+              />
+              <SendEventOnView
+                id={`${id}::${index}`}
+                event={{ name: "view_promotion", params }}
+              />
+            </Slider.Item>
+          );
+        })}
       </Slider>
 
-      <Buttons />
+      {props.arrows && <Buttons />}
 
-      <Dots images={images} interval={interval} />
+      {props.dots && <Dots images={images} interval={interval} />}
 
       <SliderJS rootId={id} interval={interval && interval * 1e3} infinite />
     </div>
